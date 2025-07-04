@@ -11,13 +11,6 @@ st.set_page_config(page_title="AI English Conversation Simulator", layout="cente
 # Title
 st.title("🗣️ AI English Conversation Simulator")
 
-# Topic and difficulty selection
-topics = ["Ordering Food", "Job Interview", "Travel", "Small Talk"]
-levels = ["Beginner", "Intermediate", "Advanced"]
-
-topic = st.selectbox("🧠 Choose a topic", topics)
-level = st.selectbox("🎯 Choose difficulty level", levels)
-
 # TTS Engine Selection
 tts_engine = st.selectbox(
     "🔊 Choose TTS Engine", 
@@ -25,9 +18,21 @@ tts_engine = st.selectbox(
     help="Google TTS: Cloud-based, high quality. Fairseq TTS: Local, works offline."
 )
 
+user_requirement = st.text_area(
+    "📝 Enter your conversation requirement",
+    height=100
+)
+
 # Simulate speaking UI
-if st.button("🎬 Generate Conversation"):
-    prompt = f"Generate a conversation about {topic} at {level} level. Format as alternating lines for two speakers, e.g., 'A: ...', 'B: ...'."
+col1, col2 = st.columns(2)
+
+with col1:
+    generate_conv = st.button("🎬 Generate Conversation")
+with col2:
+    generate_speech = st.button("🔊 Generate Speech")
+
+if generate_conv:
+    prompt = f"{user_requirement}\n Format as alternating lines for two speakers, e.g., 'A: ...', 'B: ...'."
     conversation_text = get_response(prompt)
     if not conversation_text:
         st.error("No response from the AI. Please check your API settings or try again.")
@@ -39,7 +44,7 @@ if st.button("🎬 Generate Conversation"):
         st.session_state['conversation'] = conversation_lines
 
 # Generate Speech Button
-if 'conversation' in st.session_state and st.button("🔊 Generate Speech"):
+if 'conversation' in st.session_state and generate_speech:
     with st.spinner(f"🗣️ Generating speech using {tts_engine}..."):
         if tts_engine == "Google TTS (gTTS)":
             audio_segments = conversation_to_speech(st.session_state['conversation'])
