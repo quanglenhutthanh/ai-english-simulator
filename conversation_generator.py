@@ -11,6 +11,7 @@ def get_response(input_text):
     )
 
     system_prompt = "You are a helpful assistant."
+    
     response = client.chat.completions.create(
         model="GPT-4o-mini",
         messages=[
